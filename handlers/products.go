@@ -38,7 +38,6 @@ func (p *Products) ServeHTTP(rw http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPut {
 		// expect ID in URL
 		reg := regexp.MustCompile(`/([0-9]+)`)
-		p.l.Println("Regexp", reg, r.URL.Path)
 		g := reg.FindAllStringSubmatch(r.URL.Path, -1)
 
 		if len(g) != 1 {
@@ -102,6 +101,7 @@ func (p *Products) updateProduct(id int, rw http.ResponseWriter, r *http.Request
 	p.l.Println("Handle PUT Product", r.URL.Path)
 
 	product := &data.Product{}
+	p.l.Println("New Product =========", product)
 	err := product.FromJSON(r.Body)
 
 	if err != nil {
