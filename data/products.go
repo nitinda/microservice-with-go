@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"time"
 )
 
@@ -53,7 +52,6 @@ func AddProduct(p *Product) {
 
 func genNextID() int {
 	lp := productList[len(productList)-1]
-	log.Println(lp)
 	return lp.ID + 1
 }
 
