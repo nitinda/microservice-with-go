@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -37,6 +38,7 @@ func (p Products) GetProducts(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// AddProducts method to add new product
 func (p Products) AddProducts(rw http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle Post Product", r.URL.Path)
 
@@ -44,6 +46,7 @@ func (p Products) AddProducts(rw http.ResponseWriter, r *http.Request) {
 	data.AddProduct(&product)
 }
 
+// UpdateProducts method to update product
 func (p *Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 	p.l.Println("Handle PUT Product", r.URL.Path)
 
@@ -68,17 +71,26 @@ func (p *Products) UpdateProducts(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// KeyProduct type struct
 type KeyProduct struct{}
 
+// MiddlewareProductValidation Middleware method for PUT and POST request
 func (p Products) MiddlewareProductValidation(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 
 		product := data.Product{}
-		p.l.Println("Procunt ====== ", product)
 		err := product.FromJSON(r.Body)
 		if err != nil {
 			p.l.Println("[ERROR] deserializing product", err)
 			http.Error(rw, "Unable to parse Json data", http.StatusBadRequest)
+			return
+		}
+
+		// validate the product
+		err = product.Validate()
+		if err != nil {
+			p.l.Println("[ERROR] validating the data")
+			http.Error(rw, fmt.Sprintf("Error validating the product %s", err), http.StatusBadRequest)
 			return
 		}
 

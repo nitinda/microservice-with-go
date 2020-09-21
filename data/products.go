@@ -4,25 +4,49 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"regexp"
 	"time"
+
+	"github.com/go-playground/validator"
 )
 
 // Product defines the structure for an API product
 type Product struct {
 	ID          int     `json:"id"`
-	Name        string  `json:"name"`
+	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
-	SKU         string  `json:"sku"`
+	Price       float32 `json:"price" validate:"gt=0"`
+	SKU         string  `json:"sku" validate:"required,sku"`
 	CreatedOn   string  `json:"-"`
 	UpdatedOn   string  `json:"-"`
 	DeletedOn   string  `json:"-"`
 }
 
+// Validate Method
+func (p Product) Validate() error {
+	validate := validator.New()
+	validate.RegisterValidation("sku", validateSKU)
+	return validate.Struct(p)
+}
+
+// Structure
+func validateSKU(fl validator.FieldLevel) bool {
+
+	// sku is formate of abcd-efgh-ihjk
+	reg := regexp.MustCompile(`[a-z]+-[a-z]+-[a-z]+`)
+	maches := reg.FindAllString(fl.Field().String(), -1)
+
+	if len(maches) != 1 {
+		return false
+	}
+
+	return true
+}
+
 // Products is a collection of Product
 type Products []*Product
 
-// FromJSON
+// FromJSON method read data json
 func (p *Product) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
 	return e.Decode(p)
@@ -50,11 +74,13 @@ func AddProduct(p *Product) {
 	productList = append(productList, p)
 }
 
+// genNextID generate next ID
 func genNextID() int {
 	lp := productList[len(productList)-1]
 	return lp.ID + 1
 }
 
+// UpdateProduct update the product
 func UpdateProduct(id int, p *Product) error {
 	_, pos, err := findProduct(id)
 	if err != nil {
