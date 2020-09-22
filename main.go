@@ -8,30 +8,45 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 
+	"github.com/nitinda/microservice-with-go/data"
 	"github.com/nitinda/microservice-with-go/handlers"
 )
 
 func main() {
-	l := log.New(os.Stdout, "product-api ", log.LstdFlags)
+	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
+	v := data.NewValidation()
 
-	// Create the handlers
-	ph := handlers.NewProducts(l)
+	// create the handlers
+	ph := handlers.NewProducts(l, v)
 
-	// Create new server MUX and register the handlers
+	// create a new serve mux and register the handlers
 	sm := mux.NewRouter()
 
-	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/", ph.GetProducts)
+	// handlers for API
+	getR := sm.Methods(http.MethodGet).Subrouter()
+	getR.HandleFunc("/products", ph.ListAll)
+	getR.HandleFunc("/products/{id:[0-9]+}", ph.ListSingle)
 
-	putRouter := sm.Methods(http.MethodPut).Subrouter()
-	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
-	putRouter.Use(ph.MiddlewareProductValidation)
+	putR := sm.Methods(http.MethodPut).Subrouter()
+	putR.HandleFunc("/products", ph.Update)
+	putR.Use(ph.MiddlewareValidateProduct)
 
-	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.HandleFunc("/", ph.AddProducts)
-	postRouter.Use(ph.MiddlewareProductValidation)
+	postR := sm.Methods(http.MethodPost).Subrouter()
+	postR.HandleFunc("/products", ph.Create)
+	postR.Use(ph.MiddlewareValidateProduct)
+
+	deleteR := sm.Methods(http.MethodDelete).Subrouter()
+	deleteR.HandleFunc("/products/{id:[0-9]+}", ph.Delete)
+
+	// handler for documentation
+	opts := middleware.RedocOpts{SpecURL: "/swagger.json"}
+	sh := middleware.Redoc(opts, nil)
+
+	getR.Handle("/docs", sh)
+	getR.Handle("/swagger.json", http.FileServer(http.Dir("./")))
 
 	// Create new Server
 	s := &http.Server{
@@ -45,25 +60,25 @@ func main() {
 
 	// Start the Server
 	go func() {
-		l.Println("Starting Server on port 8000")
+		l.Println("Starting server on port 9090")
+
 		err := s.ListenAndServe()
 		if err != nil {
-			l.Printf("Error Staring Server on port 8000\n%s", err)
+			l.Printf("Error starting server: %s\n", err)
 			os.Exit(1)
 		}
 	}()
 
-	// Create OS Signal Channel
+	// trap sigterm or interupt and gracefully shutdown the server
 	sigChan := make(chan os.Signal)
 	signal.Notify(sigChan, os.Interrupt)
 	signal.Notify(sigChan, os.Kill)
 
+	// Block until a signal is received.
 	sig := <-sigChan
-	l.Println("Recieved terminate, gracefulshutdown", sig)
+	log.Println("Got signal:", sig)
 
-	// Create new Context
+	// gracefully shutdown the server, waiting max 30 seconds for current operations to complete
 	tc, _ := context.WithTimeout(context.Background(), 5*time.Second)
-
-	// Graceful Shutdown
 	s.Shutdown(tc)
 }
