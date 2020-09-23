@@ -27,26 +27,29 @@ func main() {
 
 	// handlers for API
 	getR := sm.Methods(http.MethodGet).Subrouter()
-	getR.HandleFunc("/products", ph.ListAll)
-	getR.HandleFunc("/products/{id:[0-9]+}", ph.ListSingle)
+	getR.HandleFunc("/api/products", ph.ListAll)
+	getR.HandleFunc("/api/products/{id:[0-9]+}", ph.ListSingle)
 
 	putR := sm.Methods(http.MethodPut).Subrouter()
-	putR.HandleFunc("/products", ph.Update)
+	putR.HandleFunc("/api/products", ph.Update)
 	putR.Use(ph.MiddlewareValidateProduct)
 
 	postR := sm.Methods(http.MethodPost).Subrouter()
-	postR.HandleFunc("/products", ph.Create)
+	postR.HandleFunc("/api/products", ph.Create)
 	postR.Use(ph.MiddlewareValidateProduct)
 
 	deleteR := sm.Methods(http.MethodDelete).Subrouter()
-	deleteR.HandleFunc("/products/{id:[0-9]+}", ph.Delete)
+	deleteR.HandleFunc("api/products/{id:[0-9]+}", ph.Delete)
 
 	// handler for documentation
-	opts := middleware.RedocOpts{SpecURL: "/swagger.json"}
+	opts := middleware.RedocOpts{
+		SpecURL: "/swagger.yaml",
+		Path:    "/api/docs",
+	}
 	sh := middleware.Redoc(opts, nil)
 
-	getR.Handle("/docs", sh)
-	getR.Handle("/swagger.json", http.FileServer(http.Dir("./")))
+	getR.Handle("/api/docs", sh)
+	getR.Handle("/swagger.yaml", http.FileServer(http.Dir("./")))
 
 	// Create new Server
 	s := &http.Server{
@@ -60,7 +63,7 @@ func main() {
 
 	// Start the Server
 	go func() {
-		l.Println("Starting server on port 9090")
+		l.Println("Starting server on port 8000")
 
 		err := s.ListenAndServe()
 		if err != nil {
