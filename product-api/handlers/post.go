@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/nitinda/microservice-with-go/data"
+	"github.com/nitinda/microservice-with-go/product-api/data"
 )
 
 // swagger:route POST /products products createProduct

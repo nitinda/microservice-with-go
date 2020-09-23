@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/nitinda/microservice-with-go/data"
+	"github.com/nitinda/microservice-with-go/product-api/data"
 )
 
 // MiddlewareValidateProduct validates the product in the request and calls next if ok

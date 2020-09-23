@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/nitinda/microservice-with-go/data"
+	"github.com/nitinda/microservice-with-go/product-api/data"
 )
 
 // swagger:route GET /products products listProducts
@@ -15,6 +15,7 @@ import (
 func (p Products) ListAll(rw http.ResponseWriter, r *http.Request) {
 
 	p.l.Println("[DEBUG] get all records", r.URL.Path)
+	rw.Header().Add("Content-Type", "application/json")
 
 	prods := data.GetProducts()
 
@@ -25,7 +26,7 @@ func (p Products) ListAll(rw http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// swagger:route GET /products/{id} products listSingle
+// swagger:route GET /products/{id} products listSingleProduct
 // Return a list of products from the database
 // responses:
 //	200: productResponse

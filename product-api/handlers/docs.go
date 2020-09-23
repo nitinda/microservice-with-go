@@ -3,7 +3,7 @@
 // Documentation for Product API
 //
 //	Schemes: http
-//	BasePath: /
+//	BasePath: /api
 //	Version: 1.0.0
 //
 //	Consumes:
@@ -15,7 +15,7 @@
 // swagger:meta
 package handlers
 
-import "github.com/nitinda/microservice-with-go/data"
+import "github.com/nitinda/microservice-with-go/product-api/data"
 
 //
 // NOTE: Types defined here are purely for documentation purposes
@@ -67,7 +67,7 @@ type productParamsWrapper struct {
 	Body data.Product
 }
 
-// swagger:parameters updateProduct
+// swagger:parameters listSingleProduct deleteProduct
 type productIDParamsWrapper struct {
 	// The id of the product for which the operation relates
 	// in: path

@@ -11,8 +11,8 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 
-	"github.com/nitinda/microservice-with-go/data"
-	"github.com/nitinda/microservice-with-go/handlers"
+	"github.com/nitinda/microservice-with-go/product-api/data"
+	"github.com/nitinda/microservice-with-go/product-api/handlers"
 )
 
 func main() {
