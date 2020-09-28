@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/nitinda/microservice-with-go/product-api/data"
+	"github.com/nitinda/microservice-with-go/change-log-api/data"
 )
 
-// swagger:route DELETE /products/{id} products deleteProduct
+// swagger:route DELETE /changes/{id} products deleteProduct
 // Update a products details
 //
 // responses:

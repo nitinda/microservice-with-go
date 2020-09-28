@@ -15,7 +15,7 @@
 // swagger:meta
 package handlers
 
-import "github.com/nitinda/microservice-with-go/product-api/data"
+import "github.com/nitinda/microservice-with-go/change-log-api/data"
 
 //
 // NOTE: Types defined here are purely for documentation purposes

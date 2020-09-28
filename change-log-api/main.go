@@ -11,12 +11,12 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 
-	"github.com/nitinda/microservice-with-go/product-api/data"
-	"github.com/nitinda/microservice-with-go/product-api/handlers"
+	"github.com/nitinda/microservice-with-go/change-log-api/data"
+	"github.com/nitinda/microservice-with-go/change-log-api/handlers"
 )
 
 func main() {
-	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
+	l := log.New(os.Stdout, "change-log-api ", log.LstdFlags)
 	v := data.NewValidation()
 
 	// create the handlers
@@ -27,19 +27,19 @@ func main() {
 
 	// handlers for API
 	getR := sm.Methods(http.MethodGet).Subrouter()
-	getR.HandleFunc("/api/products", ph.ListAll)
-	getR.HandleFunc("/api/products/{id:[0-9]+}", ph.ListSingle)
+	getR.HandleFunc("/api/changes", ph.ListAll)
+	getR.HandleFunc("/api/changes/{id:[0-9]+}", ph.ListSingle)
 
 	putR := sm.Methods(http.MethodPut).Subrouter()
-	putR.HandleFunc("/api/products", ph.Update)
+	putR.HandleFunc("/api/changes", ph.Update)
 	putR.Use(ph.MiddlewareValidateProduct)
 
 	postR := sm.Methods(http.MethodPost).Subrouter()
-	postR.HandleFunc("/api/products", ph.Create)
+	postR.HandleFunc("/api/changes", ph.Create)
 	postR.Use(ph.MiddlewareValidateProduct)
 
 	deleteR := sm.Methods(http.MethodDelete).Subrouter()
-	deleteR.HandleFunc("api/products/{id:[0-9]+}", ph.Delete)
+	deleteR.HandleFunc("/api/changes/{id:[0-9]+}", ph.Delete)
 
 	// handler for documentation
 	opts := middleware.RedocOpts{

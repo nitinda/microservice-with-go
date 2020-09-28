@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/nitinda/microservice-change-log/rest-api/data"
+	"github.com/nitinda/microservice-with-go/change-log-api/data"
 )
 
 // KeyProduct is a key used for the Product object in the context
@@ -25,7 +25,7 @@ func NewProducts(l *log.Logger, v *data.Validation) *Products {
 }
 
 // ErrInvalidProductPath is an error message when the product path is not valid
-var ErrInvalidProductPath = fmt.Errorf("Invalid Path, path should be /products/[id]")
+var ErrInvalidProductPath = fmt.Errorf("Invalid Path, path should be /changes/[id]")
 
 // GenericError is a generic error message returned by a server
 type GenericError struct {
